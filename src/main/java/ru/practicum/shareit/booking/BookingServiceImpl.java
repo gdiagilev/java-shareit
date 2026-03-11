@@ -5,13 +5,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +24,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDto createBooking(Long userId, BookingDto dto) {
-
         User booker = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
@@ -55,7 +53,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDto approveBooking(Long ownerId, Long bookingId, boolean approved) {
-
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
 
@@ -68,13 +65,11 @@ public class BookingServiceImpl implements BookingService {
         }
 
         booking.setStatus(approved ? BookingStatus.APPROVED : BookingStatus.REJECTED);
-
         return BookingMapper.toDto(bookingRepository.save(booking));
     }
 
     @Override
     public BookingDto getBookingById(Long userId, Long bookingId) {
-
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
 
@@ -88,25 +83,23 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getUserBookings(Long userId) {
-
         userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         return bookingRepository.findByBookerIdOrderByStartDesc(userId)
                 .stream()
                 .map(BookingMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public List<BookingDto> getOwnerBookings(Long ownerId) {
-
         userRepository.findById(ownerId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         return bookingRepository.findByItemOwnerIdOrderByStartDesc(ownerId)
                 .stream()
                 .map(BookingMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

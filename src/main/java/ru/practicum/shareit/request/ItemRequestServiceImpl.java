@@ -38,18 +38,18 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequestDto> getUserRequests(Long userId) {
-        return requestRepository.findByRequesterIdOrderByCreatedDesc(userId)
+        return requestRepository.findByRequester(userId)
                 .stream()
                 .map(ItemRequestMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public List<ItemRequestDto> getOtherUsersRequests(Long userId) {
-        return requestRepository.findByRequesterIdNotOrderByCreatedDesc(userId)
+        return requestRepository.findAllExceptRequester(userId)
                 .stream()
                 .map(ItemRequestMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
