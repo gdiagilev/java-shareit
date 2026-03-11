@@ -2,7 +2,71 @@ name: ShareIt API Tests
 
 on:
   pull_request:
+    branches:
+      - main
 
 jobs:
-  build:
-    uses: yandex-praktikum/java-shareit/.github/workflows/api-tests.yml@ci
+  build-and-test:
+    name: Build, Checkstyle & Postman Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1) Клонируем репозиторий
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2) Устанавливаем JDK 21
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # 3) Кешируем Maven зависимости
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2-
+
+      # 4) Сборка проекта
+      - name: Build with Maven
+        run: mvn clean install -B -q
+
+      # 5) Запуск Maven тестов (JUnit)
+      - name: Run Maven Tests
+        run: mvn test -B
+
+      # 6) Checkstyle
+      - name: Run Checkstyle
+        run: mvn checkstyle:check -B
+
+      # 7) Upload результатов Maven тестов
+      - name: Upload Maven Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maven-test-results
+          path: '**/target/surefire-reports/*.xml'
+
+      # 8) Установка Node.js для Newman
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      # 9) Запуск Postman коллекции через Newman
+      - name: Run Postman API Tests
+        run: |
+          npm install -g newman
+          newman run postman/sprint.json --reporters cli,junit --reporter-junit-export postman-results.xml
+
+      # 10) Upload результатов Postman тестов
+      - name: Upload Postman Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postman-test-results
+          path: postman-results.xml
