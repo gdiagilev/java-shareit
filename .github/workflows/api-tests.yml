@@ -31,11 +31,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2-
 
-      # 4) Сборка проекта
-      - name: Build with Maven
-        run: mvn clean install -B -q
+      # 4) Сборка проекта без тестов
+      - name: Build project
+        run: mvn clean package -DskipTests -B
 
-      # 5) Запуск Maven тестов (JUnit)
+      # 5) Запуск Maven JUnit тестов
       - name: Run Maven Tests
         run: mvn test -B
 
@@ -51,11 +51,15 @@ jobs:
           name: maven-test-results
           path: '**/target/surefire-reports/*.xml'
 
-      # 8) Запуск Spring Boot сервера в фоне
-      - name: Run ShareIt Server
+      # 8) Запуск Spring Boot сервера через jar
+      - name: Run Spring Boot Server
         run: |
-          nohup mvn spring-boot:run &
-          sleep 20  # ждём пока сервер полностью стартует
+          java -jar target/java-shareit-0.0.1-SNAPSHOT.jar &
+          echo "Waiting for server to start..."
+          for i in {1..30}; do
+            nc -z localhost 8080 && break
+            sleep 2
+          done
 
       # 9) Установка Node.js для Newman
       - name: Set up Node.js
