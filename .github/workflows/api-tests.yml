@@ -39,10 +39,10 @@ jobs:
       - name: Run tests
         run: mvn test -B
 
-      # 6) Сохраняем результаты тестов (JUnit reports)
+      # 6) Сохраняем результаты тестов (JUnit reports) — версия v4
       - name: Upload Test Results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: '**/target/surefire-reports/*.xml'
