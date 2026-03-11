@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-test:
-    name: Build, Checkstyle & Postman Tests
+    name: Build, Run Server & Postman Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -51,19 +51,25 @@ jobs:
           name: maven-test-results
           path: '**/target/surefire-reports/*.xml'
 
-      # 8) Установка Node.js для Newman
+      # 8) Запуск Spring Boot сервера в фоне
+      - name: Run ShareIt Server
+        run: |
+          nohup mvn spring-boot:run &
+          sleep 20  # ждём пока сервер полностью стартует
+
+      # 9) Установка Node.js для Newman
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
 
-      # 9) Запуск Postman коллекции через Newman
+      # 10) Запуск Postman коллекции через Newman
       - name: Run Postman API Tests
         run: |
           npm install -g newman
           newman run postman/sprint.json --reporters cli,junit --reporter-junit-export postman-results.xml
 
-      # 10) Upload результатов Postman тестов
+      # 11) Upload результатов Postman тестов
       - name: Upload Postman Test Results
         if: always()
         uses: actions/upload-artifact@v4
