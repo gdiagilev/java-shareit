@@ -2,7 +2,6 @@ name: ShareIt API Tests
 
 on:
   pull_request:
-    # Любые ветки, направленные в main
     branches:
       - main
 
@@ -16,14 +15,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2) Устанавливаем JDK 17 (или меняем версию при обновлении проекта)
-      - name: Set up JDK 17
+      # 2) Устанавливаем JDK 21
+      - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
 
-      # 3) Кешируем Maven зависимости для ускорения сборки
+      # 3) Кешируем Maven зависимости
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
