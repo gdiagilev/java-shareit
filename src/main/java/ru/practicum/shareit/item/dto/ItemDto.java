@@ -16,6 +16,7 @@ public class ItemDto {
     @NotBlank(message = "Name must not be blank")
     private String name;
 
+    @NotBlank(message = "Description must not be blank")
     private String description;
 
     @NotNull(message = "Available must not be null")
