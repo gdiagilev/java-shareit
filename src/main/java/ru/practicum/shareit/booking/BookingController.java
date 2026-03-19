@@ -21,7 +21,10 @@ public class BookingController {
             @RequestHeader("X-Sharer-User-Id") Long userId,
             @Valid @RequestBody BookingDto bookingDto) {
 
-        return bookingService.createBooking(userId, bookingDto);
+        log.info("Получен запрос на создание бронирования от пользователя id={}", userId);
+        BookingDto createdBooking = bookingService.createBooking(userId, bookingDto);
+        log.info("Бронирование успешно создано: {}", createdBooking);
+        return createdBooking;
     }
 
     @PatchMapping("/{bookingId}")
@@ -30,7 +33,11 @@ public class BookingController {
             @PathVariable Long bookingId,
             @RequestParam boolean approved) {
 
-        return bookingService.approveBooking(userId, bookingId, approved);
+        log.info("Пользователь id={} пытается {} бронирование id={}", userId,
+                approved ? "одобрить" : "отклонить", bookingId);
+        BookingDto updatedBooking = bookingService.approveBooking(userId, bookingId, approved);
+        log.info("Бронирование id={} обновлено. Новый статус: {}", bookingId, updatedBooking);
+        return updatedBooking;
     }
 
     @GetMapping("/{bookingId}")
@@ -38,20 +45,29 @@ public class BookingController {
             @RequestHeader("X-Sharer-User-Id") Long userId,
             @PathVariable Long bookingId) {
 
-        return bookingService.getBookingById(userId, bookingId);
+        log.info("Пользователь id={} запрашивает бронирование id={}", userId, bookingId);
+        BookingDto booking = bookingService.getBookingById(userId, bookingId);
+        log.info("Бронирование получено: {}", booking);
+        return booking;
     }
 
     @GetMapping
     public List<BookingDto> getUserBookings(
             @RequestHeader("X-Sharer-User-Id") Long userId) {
 
-        return bookingService.getUserBookings(userId);
+        log.info("Запрос всех бронирований пользователя id={}", userId);
+        List<BookingDto> bookings = bookingService.getUserBookings(userId);
+        log.info("Найдено {} бронирований пользователя id={}", bookings.size(), userId);
+        return bookings;
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getOwnerBookings(
             @RequestHeader("X-Sharer-User-Id") Long userId) {
 
-        return bookingService.getOwnerBookings(userId);
+        log.info("Запрос всех бронирований владельца id={}", userId);
+        List<BookingDto> bookings = bookingService.getOwnerBookings(userId);
+        log.info("Найдено {} бронирований для владельца id={}", bookings.size(), userId);
+        return bookings;
     }
 }

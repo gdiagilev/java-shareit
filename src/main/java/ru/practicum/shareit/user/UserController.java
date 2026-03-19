@@ -21,28 +21,47 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto createUser(@RequestBody @Valid CreateUserDto createUserDto) {
-        return userService.createUser(createUserDto);
+
+        log.info("Создание нового пользователя: {}", createUserDto);
+        UserDto createdUser = userService.createUser(createUserDto);
+        log.info("Пользователь успешно создан: {}", createdUser);
+        return createdUser;
     }
 
     @GetMapping("/{id}")
     public UserDto getUser(@PathVariable Long id) {
-        return userService.getUserById(id);
+
+        log.info("Запрос пользователя по id={}", id);
+        UserDto user = userService.getUserById(id);
+        log.info("Пользователь получен: {}", user);
+        return user;
     }
 
     @GetMapping
     public List<UserDto> getAllUsers() {
-        return userService.getAllUsers();
+
+        log.info("Запрос всех пользователей");
+        List<UserDto> users = userService.getAllUsers();
+        log.info("Найдено {} пользователей", users.size());
+        return users;
     }
 
     @PatchMapping("/{id}")
     public UserDto updateUser(@PathVariable Long id,
                               @RequestBody CreateUserDto updateUserDto) {
-        return userService.updateUser(id, updateUserDto);
+
+        log.info("Обновление пользователя id={} с данными: {}", id, updateUserDto);
+        UserDto updatedUser = userService.updateUser(id, updateUserDto);
+        log.info("Пользователь id={} обновлён: {}", id, updatedUser);
+        return updatedUser;
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Long id) {
+
+        log.info("Удаление пользователя id={}", id);
         userService.deleteUser(id);
+        log.info("Пользователь id={} удалён", id);
     }
 }
