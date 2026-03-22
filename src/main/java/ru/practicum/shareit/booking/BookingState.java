@@ -6,5 +6,13 @@ public enum BookingState {
     PAST,
     FUTURE,
     WAITING,
-    REJECTED
+    REJECTED;
+
+    public static BookingState from(String state) {
+        try {
+            return BookingState.valueOf(state.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Unknown state: " + state);
+        }
+    }
 }
