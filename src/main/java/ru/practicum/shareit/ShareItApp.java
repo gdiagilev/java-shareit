@@ -8,8 +8,10 @@ public class ShareItApp {
 
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(ShareItApp.class);
-        app.setAdditionalProfiles("test");
+
+        String profile = System.getProperty("spring.profiles.active", "default");
+        app.setAdditionalProfiles(profile);
+
         app.run(args);
     }
-
 }
