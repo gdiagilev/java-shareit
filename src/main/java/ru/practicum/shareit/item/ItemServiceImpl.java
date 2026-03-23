@@ -16,6 +16,8 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
+import java.util.stream.Collectors;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -87,28 +89,55 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> getUserItems(Long userId) {
         List<Item> items = itemRepository.findByOwnerId(userId);
+        if (items.isEmpty()) return List.of();
+
+        List<Long> itemIds = items.stream()
+                .map(Item::getId)
+                .toList();
+
         LocalDateTime now = LocalDateTime.now();
+
+        var comments = commentRepository.findByItemIdInOrderByCreatedDesc(itemIds);
+
+        var commentsMap = comments.stream()
+                .collect(Collectors.groupingBy(
+                        c -> c.getItem().getId()
+                ));
+
+        var lastBookings = bookingRepository
+                .findByItemIdInAndStartBeforeOrderByStartDesc(itemIds, now);
+
+        var lastMap = lastBookings.stream()
+                .collect(Collectors.toMap(
+                        b -> b.getItem().getId(),
+                        b -> b,
+                        (existing, replacement) -> existing // первый = самый свежий
+                ));
+
+        var nextBookings = bookingRepository
+                .findByItemIdInAndStartAfterOrderByStartAsc(itemIds, now);
+
+        var nextMap = nextBookings.stream()
+                .collect(Collectors.toMap(
+                        b -> b.getItem().getId(),
+                        b -> b,
+                        (existing, replacement) -> existing // первый = ближайший
+                ));
 
         return items.stream()
                 .map(item -> {
                     ItemDto dto = ItemMapper.toDto(item);
 
-                    Booking last = bookingRepository
-                            .findFirstByItemIdAndStartBeforeOrderByStartDesc(item.getId(), now)
-                            .orElse(null);
+                    dto.setLastBooking(mapToShort(lastMap.get(item.getId())));
+                    dto.setNextBooking(mapToShort(nextMap.get(item.getId())));
 
-                    Booking next = bookingRepository
-                            .findFirstByItemIdAndStartAfterOrderByStartAsc(item.getId(), now)
-                            .orElse(null);
-
-                    dto.setLastBooking(last != null ? mapToShort(last) : null);
-                    dto.setNextBooking(next != null ? mapToShort(next) : null);
-
-                    List<CommentDto> comments = commentRepository.findByItemIdOrderByCreatedDesc(item.getId())
+                    List<CommentDto> itemComments = commentsMap
+                            .getOrDefault(item.getId(), List.of())
                             .stream()
                             .map(this::toDto)
                             .toList();
-                    dto.setComments(comments);
+
+                    dto.setComments(itemComments);
 
                     return dto;
                 })
