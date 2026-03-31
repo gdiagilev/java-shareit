@@ -53,21 +53,31 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getUserBookings(
-            @RequestHeader("X-Sharer-User-Id") Long userId) {
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestParam(defaultValue = "ALL") String state) {
 
-        log.info("Запрос всех бронирований пользователя id={}", userId);
-        List<BookingDto> bookings = bookingService.getUserBookings(userId);
-        log.info("Найдено {} бронирований пользователя id={}", bookings.size(), userId);
+        BookingState bookingState = BookingState.from(state);
+        log.info("Запрос всех бронирований пользователя id={} со статусом {}", userId, bookingState);
+
+        List<BookingDto> bookings = bookingService.getUserBookings(userId, bookingState);
+
+        log.info("Найдено {} бронирований для пользователя id={}", bookings.size(), userId);
         return bookings;
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getOwnerBookings(
-            @RequestHeader("X-Sharer-User-Id") Long userId) {
+            @RequestHeader("X-Sharer-User-Id") Long ownerId,
+            @RequestParam(defaultValue = "ALL") String state) {
 
-        log.info("Запрос всех бронирований владельца id={}", userId);
-        List<BookingDto> bookings = bookingService.getOwnerBookings(userId);
-        log.info("Найдено {} бронирований для владельца id={}", bookings.size(), userId);
+        BookingState bookingState = BookingState.from(state);
+
+        log.info("Запрос всех бронирований владельца id={} со статусом {}", ownerId, bookingState);
+
+        List<BookingDto> bookings = bookingService.getOwnerBookings(ownerId, bookingState);
+
+        log.info("Найдено {} бронирований для владельца id={}", bookings.size(), ownerId);
+
         return bookings;
     }
 }

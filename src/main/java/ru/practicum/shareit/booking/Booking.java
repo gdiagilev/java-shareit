@@ -28,10 +28,10 @@ public class Booking {
     @JoinColumn(name = "booker_id", nullable = false)
     private User booker;
 
-    @Column(nullable = false)
+    @Column(name = "start_time")
     private LocalDateTime start;
 
-    @Column(nullable = false)
+    @Column(name = "end_time")
     private LocalDateTime end;
 
     @Enumerated(EnumType.STRING)

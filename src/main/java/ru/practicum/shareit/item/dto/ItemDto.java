@@ -3,6 +3,10 @@ package ru.practicum.shareit.item.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,4 +27,10 @@ public class ItemDto {
     private Boolean available;
 
     private Long ownerId;
+
+    private BookingShortDto lastBooking;
+    private BookingShortDto nextBooking;
+
+    @Builder.Default
+    private List<CommentDto> comments = new ArrayList<>();
 }
