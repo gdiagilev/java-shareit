@@ -17,6 +17,12 @@
         <jacoco.version>0.8.12</jacoco.version>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>check</id>
+        </profile>
+    </profiles>
+
     <modules>
         <module>gateway</module>
         <module>server</module>
