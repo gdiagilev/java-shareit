@@ -6,7 +6,6 @@ import ru.practicum.shareit.item.dto.ItemShortDto;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import jakarta.validation.constraints.NotBlank;
 
 @Getter
 @Setter
@@ -16,7 +15,6 @@ import jakarta.validation.constraints.NotBlank;
 public class ItemRequestDto {
 
     private Long id;
-    @NotBlank(message = "Description must not be blank")
     private String description;
     private LocalDateTime created;
 

@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking;
 
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,21 +39,21 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (!item.getAvailable()) {
-            throw new ValidationException("Item not available");
+            throw new IllegalArgumentException("Item not available");
         }
 
         LocalDateTime now = LocalDateTime.now();
         if (dto.getStart() == null || dto.getEnd() == null) {
-            throw new ValidationException("Start and end must not be null");
+            throw new IllegalArgumentException("Start and end must not be null");
         }
         if (!dto.getStart().isAfter(now)) {
-            throw new ValidationException("Start must be in the future");
+            throw new IllegalArgumentException("Start must be in the future");
         }
         if (!dto.getEnd().isAfter(now)) {
-            throw new ValidationException("End must be in the future");
+            throw new IllegalArgumentException("End must be in the future");
         }
         if (!dto.getEnd().isAfter(dto.getStart())) {
-            throw new ValidationException("End must be after start");
+            throw new IllegalArgumentException("End must be after start");
         }
 
         var booking = Booking.builder()
