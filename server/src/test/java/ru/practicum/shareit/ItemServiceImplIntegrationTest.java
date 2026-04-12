@@ -236,6 +236,6 @@ class ItemServiceImplIntegrationTest {
         CommentDto commentDto = CommentDto.builder().text("No booking").build();
 
         assertThatThrownBy(() -> itemService.addComment(booker.getId(), item.getId(), commentDto))
-                .isInstanceOf(jakarta.validation.ValidationException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

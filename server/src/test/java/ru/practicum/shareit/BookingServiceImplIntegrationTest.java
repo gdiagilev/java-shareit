@@ -102,7 +102,7 @@ class BookingServiceImplIntegrationTest {
                 .build();
 
         assertThatThrownBy(() -> bookingService.createBooking(booker.getId(), dto))
-                .isInstanceOf(jakarta.validation.ValidationException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
