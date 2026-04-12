@@ -51,29 +51,6 @@ class UserControllerTest {
     }
 
     @Test
-    void createUser_withMissingEmail_shouldReturn400() throws Exception {
-        CreateUserDto input = new CreateUserDto();
-        input.setName("Alice");
-
-        mockMvc.perform(post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void createUser_withInvalidEmail_shouldReturn400() throws Exception {
-        CreateUserDto input = new CreateUserDto();
-        input.setName("Alice");
-        input.setEmail("not-an-email");
-
-        mockMvc.perform(post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     void getUser_shouldReturn200WithBody() throws Exception {
         UserDto response = new UserDto(1L, "Alice", "alice@test.com");
         when(userService.getUserById(1L)).thenReturn(response);

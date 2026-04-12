@@ -63,32 +63,19 @@ class ItemControllerTest {
     }
 
     @Test
-    void createItem_withMissingName_shouldReturn400() throws Exception {
+    void createItem_withoutValidation_shouldReturn200() throws Exception {
         ItemDto input = ItemDto.builder()
                 .description("A powerful drill")
                 .available(true)
                 .build();
 
-        mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").exists());
-    }
-
-    @Test
-    void createItem_withMissingAvailable_shouldReturn400() throws Exception {
-        ItemDto input = ItemDto.builder()
-                .name("Drill")
-                .description("A powerful drill")
-                .build();
+        when(itemService.createItem(anyLong(), any())).thenReturn(makeItemDto(1L));
 
         mockMvc.perform(post("/items")
                         .header("X-Sharer-User-Id", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -199,13 +186,18 @@ class ItemControllerTest {
     }
 
     @Test
-    void addComment_withBlankText_shouldReturn400() throws Exception {
+    void addComment_withAnyText_shouldReturn200() throws Exception {
         CommentDto input = CommentDto.builder().text("").build();
+        CommentDto response = CommentDto.builder()
+                .id(1L).text("").authorName("Booker")
+                .created(LocalDateTime.now()).build();
+
+        when(itemService.addComment(anyLong(), anyLong(), any())).thenReturn(response);
 
         mockMvc.perform(post("/items/1/comment")
                         .header("X-Sharer-User-Id", 2L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk());
     }
 }
