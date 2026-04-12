@@ -42,19 +42,12 @@ public class BookingServiceImpl implements BookingService {
             throw new IllegalArgumentException("Item not available");
         }
 
-        LocalDateTime now = LocalDateTime.now();
-        if (dto.getStart() == null || dto.getEnd() == null) {
-            throw new IllegalArgumentException("Start and end must not be null");
+        if (dto.getStart() == null || dto.getEnd() == null ||
+                !dto.getEnd().isAfter(dto.getStart())) {
+            throw new IllegalArgumentException("Invalid booking time");
         }
-        if (!dto.getStart().isAfter(now)) {
-            throw new IllegalArgumentException("Start must be in the future");
-        }
-        if (!dto.getEnd().isAfter(now)) {
-            throw new IllegalArgumentException("End must be in the future");
-        }
-        if (!dto.getEnd().isAfter(dto.getStart())) {
-            throw new IllegalArgumentException("End must be after start");
-        }
+
+        // DO NOT check if start/end is in the past - gateway handles that
 
         var booking = Booking.builder()
                 .start(dto.getStart())
